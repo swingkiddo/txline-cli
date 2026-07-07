@@ -17,8 +17,9 @@ pub struct TokenResponse {
 #[serde(rename_all = "camelCase")]
 pub struct ActivationRequest {
     pub tx_sig: String,
+    #[serde(rename = "walletSignature")]
     pub signature: String,
-    pub leagues: Vec<String>,
+    pub leagues: Vec<u32>,
 }
 
 #[derive(Debug, Clone, Deserialize)]

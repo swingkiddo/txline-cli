@@ -14,7 +14,7 @@ pub async fn get_recent_blockhash(client: &Client, rpc_url: &str) -> Result<Hash
             "jsonrpc": "2.0",
             "id": 1,
             "method": "getLatestBlockhash",
-            "params": [{"commitment": "confirmed"}]
+            "params": [{"commitment": "finalized"}]
         }))
         .send()
         .await
@@ -42,6 +42,7 @@ pub async fn send_transaction(client: &Client, rpc_url: &str, tx: &Transaction) 
             "method": "sendTransaction",
             "params": [tx_b64, {
                 "encoding": "base64",
+                "preflightCommitment": "finalized",
                 "commitment": "confirmed",
                 "maxRetries": 3
             }]

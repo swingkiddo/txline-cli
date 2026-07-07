@@ -5,7 +5,7 @@ use color_eyre::eyre::Context;
 use solana_sdk::signature::{Keypair, Signer};
 
 use crate::api::ApiClient;
-use crate::types::{ActivationRequest, ActivationResponse, TokenResponse};
+use crate::types::{ActivationRequest, TokenResponse};
 
 /// Perform guest authentication and save the JWT.
 pub async fn guest_auth(client: &ApiClient) -> Result<()> {
@@ -27,7 +27,7 @@ pub async fn activate_token(
     client: &ApiClient,
     tx_sig: &str,
     keypair_path: &str,
-    leagues: &[String],
+    leagues: &[u32],
 ) -> Result<()> {
     let keypair_bytes: String = std::fs::read_to_string(keypair_path)
         .wrap_err_with(|| format!("Failed to read keypair from {keypair_path}"))?
@@ -40,12 +40,13 @@ pub async fn activate_token(
     let keypair = Keypair::try_from(secret.as_slice())
         .wrap_err("Invalid keypair bytes – expected 64-byte Ed25519 keypair")?;
 
-    let message = format!(
-        "{}:{}:{}",
-        tx_sig,
-        leagues.join(","),
-        client.config().jwt
-    );
+    let leagues_str = leagues
+        .iter()
+        .map(|l| l.to_string())
+        .collect::<Vec<_>>()
+        .join(",");
+
+    let message = format!("{}:{}:{}", tx_sig, leagues_str, client.config().jwt);
 
     let signature = keypair.sign_message(message.as_bytes());
     let sig_base64 = base64::engine::general_purpose::STANDARD.encode(signature.as_ref());
@@ -56,13 +57,16 @@ pub async fn activate_token(
         leagues: leagues.to_vec(),
     };
 
-    let resp: ActivationResponse = client
-        .post_json("/api/token/activate", &request)
+    let req = client.post("/api/token/activate").json(&request);
+    let resp_text = client
+        .send_text(req)
         .await
         .wrap_err("Token activation request failed")?;
 
+    let api_token = resp_text.trim().to_string();
+
     let mut config = client.config().clone();
-    config.api_token = Some(resp.token);
+    config.api_token = Some(api_token);
     config.save_credentials()?;
 
     tracing::info!("API token activated and saved");

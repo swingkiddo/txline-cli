@@ -31,7 +31,7 @@ impl ApiClient {
             req = req.header("Authorization", format!("Bearer {}", self.config.jwt));
         }
         if let Some(ref token) = self.config.api_token {
-            req = req.header("X-API-Key", token);
+            req = req.header("X-Api-Token", token);
         }
         req
     }

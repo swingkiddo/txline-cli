@@ -49,7 +49,7 @@ pub async fn snapshot(
     client: &ApiClient,
     fixture_id: u64,
     as_of: Option<u64>,
-) -> Result<Scores> {
+) -> Result<Vec<Scores>> {
     let path = match as_of {
         Some(ts) => format!("/api/scores/snapshot/{fixture_id}?asOf={ts}"),
         None => format!("/api/scores/snapshot/{fixture_id}"),
