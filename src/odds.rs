@@ -5,6 +5,7 @@ use crate::cli::OddsCommand;
 use crate::output::print_json;
 use crate::stream;
 use crate::types::{OddsPayload, OddsValidation};
+use crate::validation;
 
 pub async fn handle(client: &ApiClient, cmd: OddsCommand, raw: bool) -> Result<()> {
     match cmd {
@@ -26,7 +27,23 @@ pub async fn handle(client: &ApiClient, cmd: OddsCommand, raw: bool) -> Result<(
         }
         OddsCommand::Validate { message_id, ts } => {
             let data = validate(client, &message_id, ts).await?;
-            print_json(&data, raw)?;
+            let leaf = validation::hash_odds(&data.odds);
+            let sub_tree_valid = validation::verify_merkle_proof(
+                &leaf,
+                &data.sub_tree_proof,
+                &data.summary.odds_sub_tree_root,
+            );
+            let main_tree_valid = validation::verify_merkle_proof(
+                &data.summary.odds_sub_tree_root,
+                &data.main_tree_proof,
+                &[],
+            );
+            let result = crate::types::ValidationResult {
+                data,
+                sub_tree_valid,
+                main_tree_valid,
+            };
+            print_json(&result, raw)?;
         }
         OddsCommand::Stream { limit, timeout } => {
             let data = stream_odds(client, limit, timeout).await?;
