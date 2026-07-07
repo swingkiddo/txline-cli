@@ -32,7 +32,7 @@ pub struct ActivationResponse {
 
 // ── Fixture ─────────────────────────────────────────────────
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Fixture {
     pub fixture_id: u64,
@@ -45,7 +45,7 @@ pub struct Fixture {
 
 // ── Odds ────────────────────────────────────────────────────
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct OddsPayload {
     pub fixture_id: u64,
@@ -58,7 +58,7 @@ pub struct OddsPayload {
 
 // ── Scores ──────────────────────────────────────────────────
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Scores {
     pub fixture_id: u64,
@@ -68,7 +68,7 @@ pub struct Scores {
     pub status: String,
 }
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ScoreStat {
     pub key: String,
     pub value: String,
@@ -76,7 +76,7 @@ pub struct ScoreStat {
 
 // ── Validation ──────────────────────────────────────────────
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct FixtureValidation {
     pub fixture_id: u64,
@@ -84,7 +84,7 @@ pub struct FixtureValidation {
     pub signature: String,
 }
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct OddsValidation {
     pub message_id: String,
@@ -92,7 +92,7 @@ pub struct OddsValidation {
     pub signature: String,
 }
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ScoresStatValidation {
     pub fixture_id: u64,
@@ -104,7 +104,7 @@ pub struct ScoresStatValidation {
 
 // ── SSE ─────────────────────────────────────────────────────
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SseMessage {
     pub id: Option<String>,
     pub event: Option<String>,
