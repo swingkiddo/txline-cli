@@ -4,6 +4,7 @@ use crate::api::ApiClient;
 use crate::cli::FixturesCommand;
 use crate::output::print_json;
 use crate::types::{Fixture, FixtureValidation};
+use crate::validation;
 
 pub async fn handle(client: &ApiClient, cmd: FixturesCommand, raw: bool) -> Result<()> {
     match cmd {
@@ -23,7 +24,23 @@ pub async fn handle(client: &ApiClient, cmd: FixturesCommand, raw: bool) -> Resu
             timestamp,
         } => {
             let data = validate(client, fixture_id, timestamp).await?;
-            print_json(&data, raw)?;
+            let leaf = validation::hash_fixture(&data.snapshot);
+            let sub_tree_valid = validation::verify_merkle_proof(
+                &leaf,
+                &data.sub_tree_proof,
+                &data.summary.update_sub_tree_root,
+            );
+            let main_tree_valid = validation::verify_merkle_proof(
+                &data.summary.update_sub_tree_root,
+                &data.main_tree_proof,
+                &[],
+            );
+            let result = crate::types::ValidationResult {
+                data,
+                sub_tree_valid,
+                main_tree_valid,
+            };
+            print_json(&result, raw)?;
         }
         FixturesCommand::BatchValidate {
             epoch_day,
