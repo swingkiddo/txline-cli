@@ -71,10 +71,10 @@ pub async fn read_sse_stream(
                     println!("{}", msg.data);
                     messages.push(msg);
                     count += 1;
-                    if let Some(lim) = limit {
-                        if count >= lim {
-                            return Ok(messages);
-                        }
+                    if let Some(lim) = limit
+                        && count >= lim
+                    {
+                        return Ok(messages);
                     }
                 }
             }

@@ -102,6 +102,7 @@ pub struct SoccerFixtureClock {
     pub seconds: u64,
 }
 
+#[allow(dead_code)]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct SoccerData {
@@ -131,6 +132,7 @@ pub struct SoccerData {
     pub is_team: Option<bool>,
 }
 
+#[allow(dead_code)]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct SoccerUpdateReference {
@@ -138,6 +140,7 @@ pub struct SoccerUpdateReference {
     pub ts: Option<u64>,
 }
 
+#[allow(dead_code)]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct SoccerPlayerStat {

@@ -62,11 +62,11 @@ impl Config {
             Config::default()
         };
 
-        if let Ok(network) = std::env::var("TXODDS_NETWORK") {
-            if let Ok(n) = Network::from_str(&network) {
-                config.network = n;
-                config.api_host = config.network.api_host().to_string();
-            }
+        if let Ok(network) = std::env::var("TXODDS_NETWORK")
+            && let Ok(n) = Network::from_str(&network)
+        {
+            config.network = n;
+            config.api_host = config.network.api_host().to_string();
         }
         if let Ok(host) = std::env::var("TXODDS_API_HOST") {
             config.api_host = host;

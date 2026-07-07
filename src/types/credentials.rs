@@ -22,6 +22,7 @@ pub struct ActivationRequest {
     pub leagues: Vec<u32>,
 }
 
+#[allow(dead_code)]
 #[derive(Debug, Clone, Deserialize)]
 pub struct ActivationResponse {
     pub token: String,

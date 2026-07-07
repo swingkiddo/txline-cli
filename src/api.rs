@@ -18,6 +18,7 @@ impl ApiClient {
         }
     }
 
+    #[allow(dead_code)]
     pub fn base_url(&self) -> &str {
         &self.config.api_host
     }
@@ -90,6 +91,7 @@ impl ApiClient {
         self.send_json::<R>(req).await
     }
 
+    #[allow(dead_code)]
     pub async fn get_text(&self, path: &str) -> Result<String> {
         let req = self.get(path);
         self.send_text(req).await
