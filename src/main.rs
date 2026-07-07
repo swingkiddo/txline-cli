@@ -7,6 +7,10 @@ mod api;
 mod auth;
 mod cli;
 mod config;
+mod fixtures;
+mod odds;
+mod scores;
+mod stream;
 mod subscribe;
 mod types;
 
@@ -59,17 +63,14 @@ async fn main() -> Result<()> {
                 )?);
             }
         }
-        cli::Commands::Fixtures { .. } => {
-            tracing::info!("Fixtures command — not yet implemented (Phase 3)");
-            println!("Fixtures: not yet implemented (Phase 3)");
+        cli::Commands::Fixtures { command } => {
+            fixtures::handle(&client, command, cli.raw).await?;
         }
-        cli::Commands::Odds { .. } => {
-            tracing::info!("Odds command — not yet implemented (Phase 3)");
-            println!("Odds: not yet implemented (Phase 3)");
+        cli::Commands::Odds { command } => {
+            odds::handle(&client, command, cli.raw).await?;
         }
-        cli::Commands::Scores { .. } => {
-            tracing::info!("Scores command — not yet implemented (Phase 3)");
-            println!("Scores: not yet implemented (Phase 3)");
+        cli::Commands::Scores { command } => {
+            scores::handle(&client, command, cli.raw).await?;
         }
         cli::Commands::Completions { shell } => {
             let mut cmd = cli::Cli::command();
