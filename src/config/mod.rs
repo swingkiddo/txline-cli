@@ -45,14 +45,10 @@ impl Config {
 
         let mut config = if creds_path.exists() {
             tracing::info!("Loading credentials from {}", creds_path.display());
-            let contents =
-                fs::read_to_string(&creds_path).wrap_err_with(|| {
-                    format!("Failed to read {}", creds_path.display())
-                })?;
-            let creds_file: CredentialsFile =
-                toml::from_str(&contents).wrap_err_with(|| {
-                    format!("Failed to parse {}", creds_path.display())
-                })?;
+            let contents = fs::read_to_string(&creds_path)
+                .wrap_err_with(|| format!("Failed to read {}", creds_path.display()))?;
+            let creds_file: CredentialsFile = toml::from_str(&contents)
+                .wrap_err_with(|| format!("Failed to parse {}", creds_path.display()))?;
             Config::from_credentials(creds_file.default)
         } else {
             tracing::warn!(

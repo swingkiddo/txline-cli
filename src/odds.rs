@@ -34,11 +34,8 @@ pub async fn handle(client: &ApiClient, cmd: OddsCommand, raw: bool) -> Result<(
                 &data.summary.odds_sub_tree_root,
             );
             let summary_leaf = validation::hash_odds_summary(&data.summary);
-            let main_tree_valid = validation::verify_merkle_proof(
-                &summary_leaf,
-                &data.main_tree_proof,
-                &[],
-            );
+            let main_tree_valid =
+                validation::verify_merkle_proof(&summary_leaf, &data.main_tree_proof, &[]);
             let result = crate::types::ValidationResult {
                 data,
                 sub_tree_valid,
@@ -74,11 +71,7 @@ pub async fn updates_by_time(
     client.get_json(&path).await
 }
 
-pub async fn validate(
-    client: &ApiClient,
-    message_id: &str,
-    ts: u64,
-) -> Result<OddsValidation> {
+pub async fn validate(client: &ApiClient, message_id: &str, ts: u64) -> Result<OddsValidation> {
     let path = format!("/api/odds/validation?messageId={message_id}&ts={ts}");
     client.get_json(&path).await
 }

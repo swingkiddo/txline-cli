@@ -34,8 +34,8 @@ pub async fn activate_token(
         .trim()
         .to_string();
 
-    let secret: Vec<u8> = serde_json::from_str(&keypair_bytes)
-        .wrap_err("Failed to parse keypair JSON array")?;
+    let secret: Vec<u8> =
+        serde_json::from_str(&keypair_bytes).wrap_err("Failed to parse keypair JSON array")?;
 
     let keypair = Keypair::try_from(secret.as_slice())
         .wrap_err("Invalid keypair bytes – expected 64-byte Ed25519 keypair")?;

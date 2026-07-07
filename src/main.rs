@@ -28,12 +28,10 @@ async fn main() -> Result<()> {
 
     let mut config = config::Config::load()?;
     if let Some(ref network) = cli.network {
-        config.network = network
-            .parse::<config::Network>()
-            .unwrap_or_else(|_| {
-                eprintln!("Invalid network: {network}. Using devnet.");
-                config::Network::Devnet
-            });
+        config.network = network.parse::<config::Network>().unwrap_or_else(|_| {
+            eprintln!("Invalid network: {network}. Using devnet.");
+            config::Network::Devnet
+        });
         config.api_host = config.network.api_host().to_string();
     }
 

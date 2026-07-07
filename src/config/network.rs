@@ -31,7 +31,9 @@ impl FromStr for Network {
         match s.to_lowercase().as_str() {
             "mainnet" => Ok(Network::Mainnet),
             "devnet" => Ok(Network::Devnet),
-            _ => Err(format!("Invalid network: {s}. Expected 'mainnet' or 'devnet'")),
+            _ => Err(format!(
+                "Invalid network: {s}. Expected 'mainnet' or 'devnet'"
+            )),
         }
     }
 }

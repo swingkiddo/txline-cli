@@ -31,11 +31,8 @@ pub async fn handle(client: &ApiClient, cmd: FixturesCommand, raw: bool) -> Resu
                 &data.summary.update_sub_tree_root,
             );
             let summary_leaf = validation::hash_fixture_summary(&data.summary);
-            let main_tree_valid = validation::verify_merkle_proof(
-                &summary_leaf,
-                &data.main_tree_proof,
-                &[],
-            );
+            let main_tree_valid =
+                validation::verify_merkle_proof(&summary_leaf, &data.main_tree_proof, &[]);
             let result = crate::types::ValidationResult {
                 data,
                 sub_tree_valid,
@@ -54,10 +51,7 @@ pub async fn handle(client: &ApiClient, cmd: FixturesCommand, raw: bool) -> Resu
     Ok(())
 }
 
-pub async fn snapshot(
-    client: &ApiClient,
-    competition_id: Option<u64>,
-) -> Result<Vec<Fixture>> {
+pub async fn snapshot(client: &ApiClient, competition_id: Option<u64>) -> Result<Vec<Fixture>> {
     let path = match competition_id {
         Some(id) => format!("/api/fixtures/snapshot?competitionId={id}"),
         None => "/api/fixtures/snapshot".to_string(),
@@ -65,11 +59,7 @@ pub async fn snapshot(
     client.get_json(&path).await
 }
 
-pub async fn updates(
-    client: &ApiClient,
-    epoch_day: u64,
-    hour_of_day: u32,
-) -> Result<Vec<Fixture>> {
+pub async fn updates(client: &ApiClient, epoch_day: u64, hour_of_day: u32) -> Result<Vec<Fixture>> {
     let path = format!("/api/fixtures/updates/{epoch_day}/{hour_of_day}");
     client.get_json(&path).await
 }
@@ -91,6 +81,7 @@ pub async fn batch_validate(
     epoch_day: u64,
     hour_of_day: u32,
 ) -> Result<Vec<FixtureValidation>> {
-    let path = format!("/api/fixtures/batch-validation?epochDay={epoch_day}&hourOfDay={hour_of_day}");
+    let path =
+        format!("/api/fixtures/batch-validation?epochDay={epoch_day}&hourOfDay={hour_of_day}");
     client.get_json(&path).await
 }

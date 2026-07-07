@@ -1,5 +1,9 @@
-use sha2::{Sha256, Digest};
-use crate::types::{Fixture, FixtureBorsh, FixtureBatchSummary, FixtureBatchSummaryBorsh, OddsPayload, OddsPayloadBorsh, OddsBatchSummary, OddsBatchSummaryBorsh, ProofNode, ScoreStat, ScoresBatchSummary, ScoresBatchSummaryBorsh};
+use crate::types::{
+    Fixture, FixtureBatchSummary, FixtureBatchSummaryBorsh, FixtureBorsh, OddsBatchSummary,
+    OddsBatchSummaryBorsh, OddsPayload, OddsPayloadBorsh, ProofNode, ScoreStat, ScoresBatchSummary,
+    ScoresBatchSummaryBorsh,
+};
+use sha2::{Digest, Sha256};
 
 pub fn hash_pair(left: &[u8], right: &[u8]) -> Vec<u8> {
     let mut hasher = Sha256::new();
@@ -68,7 +72,10 @@ mod tests {
     use bincode::Options;
 
     fn make_node(hash: Vec<u8>, is_right_sibling: bool) -> ProofNode {
-        ProofNode { hash, is_right_sibling }
+        ProofNode {
+            hash,
+            is_right_sibling,
+        }
     }
 
     fn make_fixture() -> Fixture {
@@ -101,7 +108,11 @@ mod tests {
             market_period: Some("FullTime".to_string()),
             price_names: vec!["home".to_string(), "draw".to_string(), "away".to_string()],
             prices: vec![1.85, 2.10, 5.50],
-            pct: vec!["54.05".to_string(), "47.62".to_string(), "18.18".to_string()],
+            pct: vec![
+                "54.05".to_string(),
+                "47.62".to_string(),
+                "18.18".to_string(),
+            ],
         }
     }
 
@@ -208,10 +219,7 @@ mod tests {
         let inner = hash_pair(&sib1, &leaf);
         let root = hash_pair(&inner, &sib2);
 
-        let proof = vec![
-            make_node(sib1, false),
-            make_node(sib2, true),
-        ];
+        let proof = vec![make_node(sib1, false), make_node(sib2, true)];
         assert!(verify_merkle_proof(&leaf, &proof, &root));
     }
 
@@ -370,7 +378,11 @@ mod tests {
 
     #[test]
     fn test_borsh_differs_from_bincode() {
-        let stat = ScoreStat { key: 1, value: 2, period: 3 };
+        let stat = ScoreStat {
+            key: 1,
+            value: 2,
+            period: 3,
+        };
         let borsh_hash = hash_score_stat(&stat);
         let bincode_bytes = bincode::DefaultOptions::new()
             .serialize(&stat)
@@ -381,7 +393,11 @@ mod tests {
 
     #[test]
     fn test_full_merkle_chain_score_stat() {
-        let stat = ScoreStat { key: 3, value: 2, period: 4 };
+        let stat = ScoreStat {
+            key: 3,
+            value: 2,
+            period: 4,
+        };
         let leaf = hash_score_stat(&stat);
         assert!(verify_merkle_proof(&leaf, &[], &leaf));
     }

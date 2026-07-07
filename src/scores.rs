@@ -38,32 +38,23 @@ pub async fn handle(client: &ApiClient, cmd: ScoresCommand, raw: bool) -> Result
             let data = validate(client, fixture_id, seq, &stat_key, stat_key2.as_deref()).await?;
 
             let leaf = validation::hash_score_stat(&data.stat_to_prove);
-            let stat_valid = validation::verify_merkle_proof(
-                &leaf,
-                &data.stat_proof,
-                &data.event_stat_root,
-            );
+            let stat_valid =
+                validation::verify_merkle_proof(&leaf, &data.stat_proof, &data.event_stat_root);
             let summary_leaf = validation::hash_scores_summary(&data.summary);
             let sub_tree_valid = validation::verify_merkle_proof(
                 &data.event_stat_root,
                 &data.sub_tree_proof,
                 &data.summary.event_stats_sub_tree_root,
             );
-            let main_tree_valid = validation::verify_merkle_proof(
-                &summary_leaf,
-                &data.main_tree_proof,
-                &[],
-            );
+            let main_tree_valid =
+                validation::verify_merkle_proof(&summary_leaf, &data.main_tree_proof, &[]);
 
             let mut all_valid = stat_valid && sub_tree_valid && main_tree_valid;
 
             if let (Some(stat2), Some(proof2)) = (&data.stat_to_prove2, &data.stat_proof2) {
                 let leaf2 = validation::hash_score_stat(stat2);
-                let stat2_valid = validation::verify_merkle_proof(
-                    &leaf2,
-                    proof2,
-                    &data.event_stat_root,
-                );
+                let stat2_valid =
+                    validation::verify_merkle_proof(&leaf2, proof2, &data.event_stat_root);
                 all_valid = all_valid && stat2_valid;
             }
 
@@ -125,9 +116,8 @@ pub async fn validate(
     stat_key: &str,
     stat_key2: Option<&str>,
 ) -> Result<ScoresStatValidation> {
-    let mut path = format!(
-        "/api/scores/stat-validation?fixtureId={fixture_id}&seq={seq}&statKey={stat_key}"
-    );
+    let mut path =
+        format!("/api/scores/stat-validation?fixtureId={fixture_id}&seq={seq}&statKey={stat_key}");
     if let Some(key2) = stat_key2 {
         path.push_str(&format!("&statKey2={key2}"));
     }

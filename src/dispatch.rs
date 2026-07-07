@@ -10,11 +10,7 @@ use crate::odds;
 use crate::scores;
 use crate::subscribe;
 
-pub async fn dispatch_command(
-    cli: &Cli,
-    client: &ApiClient,
-    network: &Network,
-) -> Result<()> {
+pub async fn dispatch_command(cli: &Cli, client: &ApiClient, network: &Network) -> Result<()> {
     match &cli.command {
         Commands::Auth { command } => match command {
             crate::cli::AuthCommand::Guest => {
@@ -24,20 +20,21 @@ pub async fn dispatch_command(
                 auth::activate_token(client, tx_sig, keypair, &[]).await?;
             }
         },
-        Commands::Subscribe { keypair, service_level, weeks, rpc } => {
-            let tx_sig = subscribe::subscribe_onchain(
-                keypair,
-                network,
-                *service_level,
-                *weeks,
-                rpc,
-            ).await?;
+        Commands::Subscribe {
+            keypair,
+            service_level,
+            weeks,
+            rpc,
+        } => {
+            let tx_sig =
+                subscribe::subscribe_onchain(keypair, network, *service_level, *weeks, rpc).await?;
             if cli.raw {
                 println!("{tx_sig}");
             } else {
-                println!("{}", serde_json::to_string_pretty(
-                    &serde_json::json!({ "txSig": tx_sig })
-                )?);
+                println!(
+                    "{}",
+                    serde_json::to_string_pretty(&serde_json::json!({ "txSig": tx_sig }))?
+                );
             }
         }
         Commands::Fixtures { command } => {

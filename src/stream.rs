@@ -94,9 +94,7 @@ pub async fn read_sse_stream(
     if let Some(secs) = timeout_secs {
         timeout(Duration::from_secs(secs), read_future)
             .await
-            .map_err(|_| {
-                color_eyre::eyre::eyre!("SSE stream timed out after {secs} seconds")
-            })?
+            .map_err(|_| color_eyre::eyre::eyre!("SSE stream timed out after {secs} seconds"))?
     } else {
         read_future.await
     }

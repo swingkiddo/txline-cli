@@ -83,10 +83,7 @@ impl ApiClient {
         self.send_json::<R>(req).await
     }
 
-    pub async fn get_json<R: serde::de::DeserializeOwned>(
-        &self,
-        path: &str,
-    ) -> Result<R> {
+    pub async fn get_json<R: serde::de::DeserializeOwned>(&self, path: &str) -> Result<R> {
         let req = self.get(path);
         self.send_json::<R>(req).await
     }
