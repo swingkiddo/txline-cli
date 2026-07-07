@@ -82,7 +82,7 @@ pub enum AuthCommand {
     },
 }
 
-#[derive(Debug, Subcommand)]
+#[derive(Clone, Debug, Subcommand)]
 pub enum FixturesCommand {
     /// Get a snapshot of all fixtures
     Snapshot {
@@ -119,7 +119,7 @@ pub enum FixturesCommand {
     },
 }
 
-#[derive(Debug, Subcommand)]
+#[derive(Clone, Debug, Subcommand)]
 pub enum OddsCommand {
     /// Get a snapshot of odds for a fixture
     Snapshot {
@@ -165,7 +165,7 @@ pub enum OddsCommand {
     },
 }
 
-#[derive(Debug, Subcommand)]
+#[derive(Clone, Debug, Subcommand)]
 pub enum ScoresCommand {
     /// Get a snapshot of scores for a fixture
     Snapshot {
