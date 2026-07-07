@@ -5,6 +5,7 @@ use crate::cli::ScoresCommand;
 use crate::output::print_json;
 use crate::stream;
 use crate::types::{Scores, ScoresStatValidation};
+use crate::validation;
 
 pub async fn handle(client: &ApiClient, cmd: ScoresCommand, raw: bool) -> Result<()> {
     match cmd {
@@ -35,7 +36,46 @@ pub async fn handle(client: &ApiClient, cmd: ScoresCommand, raw: bool) -> Result
             stat_key2,
         } => {
             let data = validate(client, fixture_id, seq, &stat_key, stat_key2.as_deref()).await?;
-            print_json(&data, raw)?;
+
+            let leaf = validation::hash_score_stat(&data.stat_to_prove);
+            let stat_valid = validation::verify_merkle_proof(
+                &leaf,
+                &data.stat_proof,
+                &data.event_stat_root,
+            );
+            let sub_tree_valid = validation::verify_merkle_proof(
+                &data.event_stat_root,
+                &data.sub_tree_proof,
+                &data.summary.event_stats_sub_tree_root,
+            );
+            let main_tree_valid = validation::verify_merkle_proof(
+                &data.summary.event_stats_sub_tree_root,
+                &data.main_tree_proof,
+                &[],
+            );
+
+            let mut all_valid = stat_valid && sub_tree_valid && main_tree_valid;
+
+            if let (Some(stat2), Some(proof2)) = (&data.stat_to_prove2, &data.stat_proof2) {
+                let leaf2 = validation::hash_score_stat(stat2);
+                let stat2_valid = validation::verify_merkle_proof(
+                    &leaf2,
+                    proof2,
+                    &data.event_stat_root,
+                );
+                all_valid = all_valid && stat2_valid;
+            }
+
+            let result = crate::types::ValidationResult {
+                data: serde_json::json!({
+                    "validation": data,
+                    "stat_valid": stat_valid,
+                    "all_valid": all_valid,
+                }),
+                sub_tree_valid,
+                main_tree_valid,
+            };
+            print_json(&result, raw)?;
         }
         ScoresCommand::Stream { limit, timeout } => {
             let data = stream_scores(client, limit, timeout).await?;
