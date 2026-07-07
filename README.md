@@ -41,20 +41,67 @@ Details: [docs/install.md](docs/install.md)
 
 ## Quickstart
 
-```bash
-# 1. Guest JWT
-txodds auth guest
+The full flow from nothing to live sports data:
 
-# 2. Subscribe on-chain (devnet, free tier)
+### 1. Guest JWT
+
+Get a temporary guest token (no wallet needed). The JWT is automatically saved to `~/.txodds/credentials.toml`.
+
+```bash
+txodds auth guest
+```
+
+Output:
+```
+Guest authentication successful, JWT saved
+JWT: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
+
+### 2. Subscribe on-chain
+
+Buy a subscription with a Solana transaction. You need an Ed25519 keypair (generate one with `solana-keygen new` if you don't have one).
+
+```bash
 txodds subscribe \
   --keypair ~/.config/solana/id.json \
   --service-level 1 --weeks 4 \
   --rpc https://api.devnet.solana.com
+```
 
-# 3. Activate token (use txSig from step 2)
-txodds auth activate --tx-sig <SIG> --keypair ~/.config/solana/id.json
+Output:
+```
+Subscribe transaction sent: 5AbcDEF...xyz
+txSig: 5AbcDEF...xyz
+```
 
-# 4. Snapshot fixtures
+Take note of the `txSig` — you'll need it for the next step.
+
+### 3. Activate token
+
+Activate a persistent API token by proving you own the wallet that signed the subscription:
+
+```bash
+txodds auth activate --tx-sig <txSig_from_step_2> --keypair ~/.config/solana/id.json
+```
+
+Output:
+```
+API token activated and saved
+```
+
+Now you're fully authenticated. All subsequent API calls will use the saved token automatically.
+
+### 4. Fetch fixtures
+
+Get a snapshot of all sports fixtures:
+
+```bash
+txodds fixtures snapshot
+```
+
+Use `--raw` for compact JSON when piping to `jq`:
+
+```bash
 txodds fixtures snapshot --raw | jq '.[0] | {FixtureId, Participant1, Participant2, Competition}'
 ```
 
@@ -67,10 +114,24 @@ txodds fixtures snapshot --raw | jq '.[0] | {FixtureId, Participant1, Participan
 }
 ```
 
+### 5. Verify data integrity
+
+Validate a fixture using a two-level Merkle proof. Both `sub_tree_valid` and `main_tree_valid` must be `true`:
+
 ```bash
-# 5. Live odds stream
+txodds fixtures validate --fixture-id 12345 --raw \
+  | jq '{sub_tree_valid, main_tree_valid}'
+```
+
+### 6. Stream live odds
+
+Subscribe to live odds updates via Server-Sent Events (SSE):
+
+```bash
 txodds odds stream --limit 3
 ```
+
+Each event is printed to stdout as it arrives. Use `--timeout 60` to stop after 60 seconds, or press Ctrl+C to stop at any time.
 
 ## Authentication
 
