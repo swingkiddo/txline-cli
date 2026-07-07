@@ -136,21 +136,4 @@ pub struct SubscribeAccounts {
     pub associated_token_program: String,
 }
 
-// ── Re-exports ──────────────────────────────────────────────
 
-pub use self::{
-    ActivationRequest,
-    ActivationResponse,
-    Credentials,
-    Fixture,
-    FixtureValidation,
-    OddsPayload,
-    OddsValidation,
-    ProofNode,
-    ScoreStat,
-    Scores,
-    ScoresStatValidation,
-    SseMessage,
-    SubscribeAccounts,
-    TokenResponse,
-};
