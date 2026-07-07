@@ -14,6 +14,7 @@ mod scores;
 mod stream;
 mod subscribe;
 mod types;
+mod validation;
 
 #[tokio::main]
 async fn main() -> Result<()> {
