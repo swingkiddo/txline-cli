@@ -26,9 +26,7 @@ impl ApiClient {
         &self.config
     }
 
-    pub fn get(&self, path: &str) -> reqwest::RequestBuilder {
-        let url = format!("{}{}", self.config.api_host, path);
-        let mut req = self.client.get(&url);
+    fn apply_auth_headers(&self, mut req: reqwest::RequestBuilder) -> reqwest::RequestBuilder {
         if !self.config.jwt.is_empty() {
             req = req.header("Authorization", format!("Bearer {}", self.config.jwt));
         }
@@ -38,16 +36,16 @@ impl ApiClient {
         req
     }
 
+    pub fn get(&self, path: &str) -> reqwest::RequestBuilder {
+        let url = format!("{}{}", self.config.api_host, path);
+        let req = self.client.get(&url);
+        self.apply_auth_headers(req)
+    }
+
     pub fn post(&self, path: &str) -> reqwest::RequestBuilder {
         let url = format!("{}{}", self.config.api_host, path);
-        let mut req = self.client.post(&url);
-        if !self.config.jwt.is_empty() {
-            req = req.header("Authorization", format!("Bearer {}", self.config.jwt));
-        }
-        if let Some(ref token) = self.config.api_token {
-            req = req.header("X-API-Key", token);
-        }
-        req
+        let req = self.client.post(&url);
+        self.apply_auth_headers(req)
     }
 
     pub async fn send_json<T: serde::de::DeserializeOwned>(
