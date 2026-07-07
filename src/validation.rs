@@ -40,3 +40,91 @@ pub fn hash_score_stat(stat: &ScoreStat) -> Vec<u8> {
     let encoded = bincode::serialize(stat).expect("score stat serialization");
     compute_leaf_hash(&encoded)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn make_node(hash: Vec<u8>, is_right_sibling: bool) -> ProofNode {
+        ProofNode { hash, is_right_sibling }
+    }
+
+    #[test]
+    fn test_hash_pair_deterministic() {
+        let a = vec![1, 2, 3];
+        let b = vec![4, 5, 6];
+        let h1 = hash_pair(&a, &b);
+        let h2 = hash_pair(&a, &b);
+        assert_eq!(h1, h2);
+        assert_eq!(h1.len(), 32);
+    }
+
+    #[test]
+    fn test_hash_pair_order_matters() {
+        let a = vec![1, 2, 3];
+        let b = vec![4, 5, 6];
+        assert_ne!(hash_pair(&a, &b), hash_pair(&b, &a));
+    }
+
+    #[test]
+    fn test_verify_empty_proof_leaf_equals_root() {
+        let leaf = compute_leaf_hash(b"hello");
+        assert!(verify_merkle_proof(&leaf, &[], &leaf));
+    }
+
+    #[test]
+    fn test_verify_empty_proof_wrong_root() {
+        let leaf = compute_leaf_hash(b"hello");
+        let wrong_root = compute_leaf_hash(b"world");
+        assert!(!verify_merkle_proof(&leaf, &[], &wrong_root));
+    }
+
+    #[test]
+    fn test_verify_single_node_left_sibling() {
+        let leaf = compute_leaf_hash(b"leaf");
+        let sibling = compute_leaf_hash(b"sibling");
+        let root = hash_pair(&sibling, &leaf);
+        let proof = vec![make_node(sibling, false)];
+        assert!(verify_merkle_proof(&leaf, &proof, &root));
+    }
+
+    #[test]
+    fn test_verify_single_node_right_sibling() {
+        let leaf = compute_leaf_hash(b"leaf");
+        let sibling = compute_leaf_hash(b"sibling");
+        let root = hash_pair(&leaf, &sibling);
+        let proof = vec![make_node(sibling, true)];
+        assert!(verify_merkle_proof(&leaf, &proof, &root));
+    }
+
+    #[test]
+    fn test_verify_two_level_proof() {
+        let leaf = compute_leaf_hash(b"leaf");
+        let sib1 = compute_leaf_hash(b"sib1");
+        let sib2 = compute_leaf_hash(b"sib2");
+
+        let inner = hash_pair(&sib1, &leaf);
+        let root = hash_pair(&inner, &sib2);
+
+        let proof = vec![
+            make_node(sib1, false),
+            make_node(sib2, true),
+        ];
+        assert!(verify_merkle_proof(&leaf, &proof, &root));
+    }
+
+    #[test]
+    fn test_compute_leaf_hash_deterministic() {
+        let h1 = compute_leaf_hash(b"test data");
+        let h2 = compute_leaf_hash(b"test data");
+        assert_eq!(h1, h2);
+        assert_eq!(h1.len(), 32);
+    }
+
+    #[test]
+    fn test_compute_leaf_hash_different_inputs() {
+        let h1 = compute_leaf_hash(b"data1");
+        let h2 = compute_leaf_hash(b"data2");
+        assert_ne!(h1, h2);
+    }
+}
