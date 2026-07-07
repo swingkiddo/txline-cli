@@ -1,5 +1,5 @@
 use sha2::{Sha256, Digest};
-use crate::types::{Fixture, OddsPayload, ProofNode, ScoreStat};
+use crate::types::{Fixture, FixtureBorsh, FixtureBatchSummary, FixtureBatchSummaryBorsh, OddsPayload, OddsPayloadBorsh, OddsBatchSummary, OddsBatchSummaryBorsh, ProofNode, ScoreStat, ScoresBatchSummary, ScoresBatchSummaryBorsh};
 
 pub fn hash_pair(left: &[u8], right: &[u8]) -> Vec<u8> {
     let mut hasher = Sha256::new();
@@ -27,17 +27,37 @@ pub fn compute_leaf_hash(data: &[u8]) -> Vec<u8> {
 }
 
 pub fn hash_fixture(fixture: &Fixture) -> Vec<u8> {
-    let encoded = bincode::serialize(fixture).expect("fixture serialization");
+    let borsh_fixture = FixtureBorsh::from(fixture);
+    let encoded = borsh::to_vec(&borsh_fixture).expect("fixture borsh serialization");
     compute_leaf_hash(&encoded)
 }
 
 pub fn hash_odds(odds: &OddsPayload) -> Vec<u8> {
-    let encoded = bincode::serialize(odds).expect("odds serialization");
+    let borsh_odds = OddsPayloadBorsh::from(odds);
+    let encoded = borsh::to_vec(&borsh_odds).expect("odds borsh serialization");
     compute_leaf_hash(&encoded)
 }
 
 pub fn hash_score_stat(stat: &ScoreStat) -> Vec<u8> {
-    let encoded = bincode::serialize(stat).expect("score stat serialization");
+    let encoded = borsh::to_vec(stat).expect("score stat borsh serialization");
+    compute_leaf_hash(&encoded)
+}
+
+pub fn hash_fixture_summary(summary: &FixtureBatchSummary) -> Vec<u8> {
+    let borsh_summary = FixtureBatchSummaryBorsh::from(summary);
+    let encoded = borsh::to_vec(&borsh_summary).expect("fixture summary borsh serialization");
+    compute_leaf_hash(&encoded)
+}
+
+pub fn hash_odds_summary(summary: &OddsBatchSummary) -> Vec<u8> {
+    let borsh_summary = OddsBatchSummaryBorsh::from(summary);
+    let encoded = borsh::to_vec(&borsh_summary).expect("odds summary borsh serialization");
+    compute_leaf_hash(&encoded)
+}
+
+pub fn hash_scores_summary(summary: &ScoresBatchSummary) -> Vec<u8> {
+    let borsh_summary = ScoresBatchSummaryBorsh::from(summary);
+    let encoded = borsh::to_vec(&borsh_summary).expect("scores summary borsh serialization");
     compute_leaf_hash(&encoded)
 }
 

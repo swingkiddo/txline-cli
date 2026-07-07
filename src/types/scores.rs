@@ -27,11 +27,11 @@ pub struct Scores {
     pub score: Option<SoccerFixtureScore>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, borsh::BorshSerialize, borsh::BorshDeserialize)]
 pub struct ScoreStat {
-    pub key: u64,
-    pub value: u64,
-    pub period: u64,
+    pub key: u32,
+    pub value: i32,
+    pub period: i32,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -56,12 +56,50 @@ pub struct ScoresBatchSummary {
     pub event_stats_sub_tree_root: Vec<u8>,
 }
 
+#[derive(Debug, Clone, borsh::BorshSerialize, borsh::BorshDeserialize)]
+pub struct ScoresBatchSummaryBorsh {
+    pub fixture_id: i64,
+    pub update_stats: ScoresUpdateStatsBorsh,
+    pub events_sub_tree_root: [u8; 32],
+}
+
+impl From<&ScoresBatchSummary> for ScoresBatchSummaryBorsh {
+    fn from(s: &ScoresBatchSummary) -> Self {
+        let mut root = [0u8; 32];
+        if s.event_stats_sub_tree_root.len() == 32 {
+            root.copy_from_slice(&s.event_stats_sub_tree_root);
+        }
+        Self {
+            fixture_id: s.fixture_id as i64,
+            update_stats: ScoresUpdateStatsBorsh::from(&s.update_stats),
+            events_sub_tree_root: root,
+        }
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ScoresUpdateStats {
     pub update_count: u64,
     pub min_timestamp: u64,
     pub max_timestamp: u64,
+}
+
+#[derive(Debug, Clone, borsh::BorshSerialize, borsh::BorshDeserialize)]
+pub struct ScoresUpdateStatsBorsh {
+    pub update_count: i32,
+    pub min_timestamp: i64,
+    pub max_timestamp: i64,
+}
+
+impl From<&ScoresUpdateStats> for ScoresUpdateStatsBorsh {
+    fn from(u: &ScoresUpdateStats) -> Self {
+        Self {
+            update_count: u.update_count as i32,
+            min_timestamp: u.min_timestamp as i64,
+            max_timestamp: u.max_timestamp as i64,
+        }
+    }
 }
 
 // ── Soccer Types ────────────────────────────────────────────
