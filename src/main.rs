@@ -9,6 +9,7 @@ mod cli;
 mod config;
 mod fixtures;
 mod odds;
+mod output;
 mod scores;
 mod stream;
 mod subscribe;

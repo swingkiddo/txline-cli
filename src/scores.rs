@@ -2,17 +2,9 @@ use color_eyre::Result;
 
 use crate::api::ApiClient;
 use crate::cli::ScoresCommand;
+use crate::output::print_json;
 use crate::stream;
 use crate::types::{Scores, ScoresStatValidation};
-
-fn print_json<T: serde::Serialize>(data: &T, raw: bool) -> Result<()> {
-    if raw {
-        println!("{}", serde_json::to_string(data)?);
-    } else {
-        println!("{}", serde_json::to_string_pretty(data)?);
-    }
-    Ok(())
-}
 
 pub async fn handle(client: &ApiClient, cmd: ScoresCommand, raw: bool) -> Result<()> {
     match cmd {

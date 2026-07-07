@@ -2,16 +2,8 @@ use color_eyre::Result;
 
 use crate::api::ApiClient;
 use crate::cli::FixturesCommand;
+use crate::output::print_json;
 use crate::types::{Fixture, FixtureValidation};
-
-fn print_json<T: serde::Serialize>(data: &T, raw: bool) -> Result<()> {
-    if raw {
-        println!("{}", serde_json::to_string(data)?);
-    } else {
-        println!("{}", serde_json::to_string_pretty(data)?);
-    }
-    Ok(())
-}
 
 pub async fn handle(client: &ApiClient, cmd: FixturesCommand, raw: bool) -> Result<()> {
     match cmd {
