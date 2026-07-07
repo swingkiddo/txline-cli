@@ -30,8 +30,9 @@ pub async fn handle(client: &ApiClient, cmd: FixturesCommand, raw: bool) -> Resu
                 &data.sub_tree_proof,
                 &data.summary.update_sub_tree_root,
             );
+            let summary_leaf = validation::hash_fixture_summary(&data.summary);
             let main_tree_valid = validation::verify_merkle_proof(
-                &data.summary.update_sub_tree_root,
+                &summary_leaf,
                 &data.main_tree_proof,
                 &[],
             );

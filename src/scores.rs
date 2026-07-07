@@ -43,13 +43,14 @@ pub async fn handle(client: &ApiClient, cmd: ScoresCommand, raw: bool) -> Result
                 &data.stat_proof,
                 &data.event_stat_root,
             );
+            let summary_leaf = validation::hash_scores_summary(&data.summary);
             let sub_tree_valid = validation::verify_merkle_proof(
                 &data.event_stat_root,
                 &data.sub_tree_proof,
                 &data.summary.event_stats_sub_tree_root,
             );
             let main_tree_valid = validation::verify_merkle_proof(
-                &data.summary.event_stats_sub_tree_root,
+                &summary_leaf,
                 &data.main_tree_proof,
                 &[],
             );

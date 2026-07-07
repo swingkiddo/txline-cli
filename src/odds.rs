@@ -33,8 +33,9 @@ pub async fn handle(client: &ApiClient, cmd: OddsCommand, raw: bool) -> Result<(
                 &data.sub_tree_proof,
                 &data.summary.odds_sub_tree_root,
             );
+            let summary_leaf = validation::hash_odds_summary(&data.summary);
             let main_tree_valid = validation::verify_merkle_proof(
-                &data.summary.odds_sub_tree_root,
+                &summary_leaf,
                 &data.main_tree_proof,
                 &[],
             );
