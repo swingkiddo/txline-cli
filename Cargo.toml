@@ -27,3 +27,40 @@ toml = "0.8"
 directories = "6.0"
 bincode = "1.3"
 borsh = "0.10"
+
+# cargo-dist configuration
+# See https://opensource.axo.dev/cargo-dist/
+[workspace.metadata.dist]
+# The preferred cargo-dist version to use in CI (e.g. installer + main)
+cargo-dist-version = "0.25.1"
+# The preferred Rust toolchain to use in CI (rustup default is "stable")
+rust-toolchain = "stable"
+# CI backends to support
+ci = "github"
+# Target platforms to build installers for (none — we ship raw archives)
+installers = []
+# Which kinds of artifacts to ship in the release
+artifacts = ["binary"]
+# Don't upload to a package registry
+publish-jobs = []
+# Archive format for each target
+formats = ["tarxzip"]
+# Targets to build (5-platform matrix from PLAN.md)
+targets = [
+    "x86_64-unknown-linux-gnu",
+    "aarch64-unknown-linux-gnu",
+    "x86_64-apple-darwin",
+    "aarch64-apple-darwin",
+    "x86_64-pc-windows-msvc",
+]
+# Generate a fallback CI workflow
+github-actions = true
+# Use zip for Windows, tar.xz for Unix
+unix-archive = ".tar.xz"
+windows-archive = ".zip"
+# Include the install scripts in the release artifacts
+include = ["install.sh", "install.ps1"]
+# Don't break the build for warnings (cargo-dist probes the project)
+allow-dirty = true
+# Tag-only releases (no auto-tag from commits)
+tag-username = "swingkiddo"
