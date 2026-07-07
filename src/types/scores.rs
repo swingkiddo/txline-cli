@@ -35,7 +35,7 @@ pub struct ScoreStat {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "PascalCase")]
+#[serde(rename_all = "camelCase")]
 pub struct ScoresStatValidation {
     pub ts: u64,
     pub stat_to_prove: ScoreStat,
