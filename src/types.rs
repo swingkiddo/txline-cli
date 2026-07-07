@@ -125,15 +125,15 @@ pub struct ProofNode {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct SubscribeAccounts {
-    pub user: String,
-    pub pricing_matrix: String,
-    pub token_mint: String,
-    pub user_token_account: String,
-    pub token_treasury_vault: String,
-    pub token_treasury_pda: String,
-    pub token_program: String,
-    pub system_program: String,
-    pub associated_token_program: String,
+    pub user: solana_sdk::pubkey::Pubkey,
+    pub pricing_matrix: solana_sdk::pubkey::Pubkey,
+    pub token_mint: solana_sdk::pubkey::Pubkey,
+    pub user_token_account: solana_sdk::pubkey::Pubkey,
+    pub token_treasury_vault: solana_sdk::pubkey::Pubkey,
+    pub token_treasury_pda: solana_sdk::pubkey::Pubkey,
+    pub token_program: solana_sdk::pubkey::Pubkey,
+    pub system_program: solana_sdk::pubkey::Pubkey,
+    pub associated_token_program: solana_sdk::pubkey::Pubkey,
 }
 
 

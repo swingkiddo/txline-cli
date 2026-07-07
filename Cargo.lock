@@ -3282,6 +3282,7 @@ name = "txodds"
 version = "0.1.0"
 dependencies = [
  "base64",
+ "bincode",
  "clap",
  "clap_complete",
  "color-eyre",

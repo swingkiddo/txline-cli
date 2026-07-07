@@ -7,6 +7,7 @@ mod api;
 mod auth;
 mod cli;
 mod config;
+mod subscribe;
 mod types;
 
 #[tokio::main]
@@ -30,6 +31,7 @@ async fn main() -> Result<()> {
         config.api_host = config.network.api_host().to_string();
     }
 
+    let network = config.network.clone();
     let client = api::ApiClient::new(config);
 
     match cli.command {
@@ -41,9 +43,21 @@ async fn main() -> Result<()> {
                 auth::activate_token(&client, &tx_sig, &keypair, &[]).await?;
             }
         },
-        cli::Commands::Subscribe { .. } => {
-            tracing::info!("Subscribe command — not yet implemented (Phase 2)");
-            println!("Subscribe: not yet implemented (Phase 2)");
+        cli::Commands::Subscribe { keypair, service_level, weeks, rpc } => {
+            let tx_sig = subscribe::subscribe_onchain(
+                &keypair,
+                &network,
+                service_level,
+                weeks,
+                &rpc,
+            ).await?;
+            if cli.raw {
+                println!("{tx_sig}");
+            } else {
+                println!("{}", serde_json::to_string_pretty(
+                    &serde_json::json!({ "txSig": tx_sig })
+                )?);
+            }
         }
         cli::Commands::Fixtures { .. } => {
             tracing::info!("Fixtures command — not yet implemented (Phase 3)");
