@@ -1,5 +1,5 @@
 use sha2::{Sha256, Digest};
-use crate::types::ProofNode;
+use crate::types::{Fixture, OddsPayload, ProofNode, ScoreStat};
 
 pub fn hash_pair(left: &[u8], right: &[u8]) -> Vec<u8> {
     let mut hasher = Sha256::new();
@@ -24,4 +24,19 @@ pub fn compute_leaf_hash(data: &[u8]) -> Vec<u8> {
     let mut hasher = Sha256::new();
     hasher.update(data);
     hasher.finalize().to_vec()
+}
+
+pub fn hash_fixture(fixture: &Fixture) -> Vec<u8> {
+    let encoded = bincode::serialize(fixture).expect("fixture serialization");
+    compute_leaf_hash(&encoded)
+}
+
+pub fn hash_odds(odds: &OddsPayload) -> Vec<u8> {
+    let encoded = bincode::serialize(odds).expect("odds serialization");
+    compute_leaf_hash(&encoded)
+}
+
+pub fn hash_score_stat(stat: &ScoreStat) -> Vec<u8> {
+    let encoded = bincode::serialize(stat).expect("score stat serialization");
+    compute_leaf_hash(&encoded)
 }
