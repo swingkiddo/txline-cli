@@ -70,7 +70,7 @@ jobs:
         shell: bash
         run: |
           cd out
-          sha256sum * | tee SHA256SUMS.txt
+          shasum -a 256 * | tee SHA256SUMS.txt
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
