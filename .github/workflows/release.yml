@@ -43,6 +43,12 @@ jobs:
         with:
           cache-on-failure: true
 
+      - name: Install cross-compiler (aarch64)
+        if: matrix.target == 'aarch64-unknown-linux-gnu'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-aarch64-linux-gnu
+
       - name: Build release binary
         run: cargo build --release --locked --target ${{ matrix.target }} --bin txodds
 
