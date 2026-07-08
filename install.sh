@@ -29,13 +29,15 @@ detect_target() {
 
 fetch_latest_tag() {
   local url="https://api.github.com/repos/${REPO}/releases/latest"
+  local response
   if command -v curl >/dev/null 2>&1; then
-    curl -sSL "$url" | grep -m1 '"tag_name"' | sed -E 's/.*"v?([^"]+)".*/\1/'
+    response="$(curl -sSL "$url")"
   elif command -v wget >/dev/null 2>&1; then
-    wget -qO- "$url" | grep -m1 '"tag_name"' | sed -E 's/.*"v?([^"]+)".*/\1/'
+    response="$(wget -qO- "$url")"
   else
     err "Need curl or wget installed"; return 1
   fi
+  echo "$response" | grep -m1 '"tag_name"' | sed -E 's/.*"v?([^"]+)".*/\1/'
 }
 
 download_archive() {
