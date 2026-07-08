@@ -112,9 +112,23 @@ jobs:
           name: checksums
           path: artifacts/SHA256SUMS.txt
 
+  install-scripts:
+    name: Prepare install scripts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Upload install scripts
+        uses: actions/upload-artifact@v4
+        with:
+          name: install-scripts
+          path: |
+            install.sh
+            install.ps1
+
   publish:
     name: Publish GitHub Release
-    needs: [release, checksums]
+    needs: [release, checksums, install-scripts]
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/v')
     permissions:
