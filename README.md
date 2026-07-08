@@ -17,6 +17,8 @@
 
 ## Install
 
+### Quick install
+
 **macOS / Linux:**
 ```bash
 curl -sfL https://github.com/swingkiddo/txline-cli/releases/latest/download/install.sh | sh
@@ -27,15 +29,47 @@ curl -sfL https://github.com/swingkiddo/txline-cli/releases/latest/download/inst
 iwr -useb https://github.com/swingkiddo/txline-cli/releases/latest/download/install.ps1 | iex
 ```
 
-**From source:**
+### Install specific version
+
+```bash
+TXODDS_VERSION=0.1.0 curl -sfL https://github.com/swingkiddo/txline-cli/releases/latest/download/install.sh | sh
+```
+
+```powershell
+$env:TXODDS_VERSION = "0.1.0"; iwr -useb https://github.com/swingkiddo/txline-cli/releases/latest/download/install.ps1 | iex
+```
+
+### Manual download
+
+Download the archive for your platform from the [latest release](https://github.com/swingkiddo/txline-cli/releases/latest).
+
+| OS | Arch | File |
+|---|---|---|
+| Linux | x86_64 | `txodds-x86_64-unknown-linux-gnu.tar.xz` |
+| Linux | ARM64 | `txodds-aarch64-unknown-linux-gnu.tar.xz` |
+| macOS | Intel | `txodds-x86_64-apple-darwin.tar.xz` |
+| macOS | Apple Silicon | `txodds-aarch64-apple-darwin.tar.xz` |
+| Windows | x86_64 | `txodds-x86_64-pc-windows-msvc.zip` |
+
+### Verify integrity
+
+```bash
+curl -sfL https://github.com/swingkiddo/txline-cli/releases/latest/download/SHA256SUMS.txt | sha256sum -c - --ignore-missing
+```
+
+### From source
+
 ```bash
 cargo install --git https://github.com/swingkiddo/txline-cli txodds
 ```
+
+### Environment variables
 
 | Env var | Default | Purpose |
 |---|---|---|
 | `TXODDS_INSTALL_REPO` | `swingkiddo/txline-cli` | GitHub repo to install from |
 | `TXODDS_INSTALL_DIR` | `~/.txodds/bin` | Binary install directory |
+| `TXODDS_VERSION` | *(latest)* | Specific version to install |
 
 Details: [docs/install.md](docs/install.md)
 
