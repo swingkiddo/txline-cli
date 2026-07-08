@@ -15,7 +15,7 @@ err()  { printf '\033[1;31merror:\033[0m %s\n' "$*" >&2; }
 detect_target() {
   local os arch
   case "$(uname -s)" in
-    Linux)  os="unknown-linux" ;;
+    Linux)  os="unknown-linux-gnu" ;;
     Darwin) os="apple-darwin" ;;
     *) err "Unsupported OS: $(uname -s)"; return 1 ;;
   esac
@@ -97,10 +97,32 @@ main() {
   install -m 0755 "$src" "${INSTALL_DIR}/${BINARY_NAME}"
   info "Installed to ${INSTALL_DIR}/${BINARY_NAME}"
 
-  case ":$PATH:" in
-    *":${INSTALL_DIR}:"*) ;;
-    *) info "Add to PATH: export PATH=\"${INSTALL_DIR}:\$PATH\"" ;;
-  esac
+  local linked=0
+  if [[ -w /usr/local/bin ]]; then
+    ln -sf "${INSTALL_DIR}/${BINARY_NAME}" "/usr/local/bin/${BINARY_NAME}" && linked=1
+  fi
+
+  if (( linked == 0 )); then
+    case ":$PATH:" in
+      *":${INSTALL_DIR}:"*) ;;
+      *)
+        local rc_file= shell_name="${SHELL##*/}"
+        case "$shell_name" in
+          zsh)  rc_file="$HOME/.zshrc" ;;
+          fish) rc_file="$HOME/.config/fish/config.fish" ;;
+          *)    rc_file="$HOME/.bashrc" ;;
+        esac
+        local export_line="export PATH=\"${INSTALL_DIR}:\$PATH\""
+        if [[ -n "$rc_file" ]] && ! grep -F "$INSTALL_DIR" "$rc_file" >/dev/null 2>&1; then
+          printf '\n# txodds CLI\n%s\n' "$export_line" >> "$rc_file"
+          info "Added to ${rc_file} (restart shell or: source ${rc_file})"
+        fi
+        info "Or add to PATH now: ${export_line}"
+        ;;
+    esac
+  else
+    info "Symlinked to /usr/local/bin/${BINARY_NAME}"
+  fi
 
   info "Verifying install..."
   "${INSTALL_DIR}/${BINARY_NAME}" --version

@@ -1,4 +1,4 @@
 /target
-# *.md
+.docs
 *.json
 *.log

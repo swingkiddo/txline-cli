@@ -59,7 +59,7 @@ github-actions = true
 unix-archive = ".tar.xz"
 windows-archive = ".zip"
 # Include the install scripts in the release artifacts
-include = ["install.sh", "install.ps1"]
+include = ["install.sh", "install.ps1", "tests/Install-TxoddsCli.Tests.ps1"]
 # Don't break the build for warnings (cargo-dist probes the project)
 allow-dirty = true
 # Tag-only releases (no auto-tag from commits)

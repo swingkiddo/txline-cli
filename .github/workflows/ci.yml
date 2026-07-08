@@ -44,3 +44,44 @@ jobs:
 
       - name: Build release binary
         run: cargo build --release --locked --bin txodds
+
+  pester-install:
+    name: Pester tests (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Pester 4.10.1
+        shell: pwsh
+        run: |
+          Set-PSRepository PSGallery -InstallationPolicy Trusted
+          Install-Module -Name Pester -Force -SkipPublisherCheck -Scope CurrentUser -RequiredVersion 4.10.1
+
+      - name: Run Pester tests
+        shell: pwsh
+        run: |
+          Import-Module Pester
+          Invoke-Pester -Path './tests/Install-TxoddsCli.Tests.ps1' -EnableExit:$true
+
+  smoke-install:
+    name: Smoke install (windows-latest)
+    runs-on: windows-latest
+    needs: [check, pester-install]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run install.ps1
+        shell: pwsh
+        run: |
+          $env:TXODDS_INSTALL_DIR = "$env:RUNNER_TEMP\txodds-install\bin"
+          .\install.ps1
+          if (-not (Test-Path "$env:TXODDS_INSTALL_DIR\txodds.exe")) {
+            throw "txodds.exe not found after install"
+          }
+          & "$env:TXODDS_INSTALL_DIR\txodds.exe" --version
