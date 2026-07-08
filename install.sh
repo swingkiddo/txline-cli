@@ -69,12 +69,14 @@ main() {
   target="$(detect_target)"
   info "Detected target: ${target}"
 
-  local tag
-  tag="$(fetch_latest_tag)"
+  local tag="${TXODDS_VERSION:-}"
   if [[ -z "$tag" ]]; then
-    err "Could not determine latest release tag"; return 1
+    tag="$(fetch_latest_tag)"
+    if [[ -z "$tag" ]]; then
+      err "Could not determine latest release tag (and TXODDS_VERSION is not set)"; return 1
+    fi
   fi
-  info "Latest release: v${tag}"
+  info "Installing version: v${tag}"
 
   mkdir -p "$INSTALL_DIR"
 

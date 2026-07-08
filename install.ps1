@@ -25,11 +25,14 @@ try {
     New-Item -ItemType Directory -Force -Path $InstallDir | Out-Null
   }
 
-  $apiUrl = "https://api.github.com/repos/$Repo/releases/latest"
-  $release = Invoke-RestMethod -Uri $apiUrl
-  $tag = $release.tag_name -replace '^v',''
-  if (-not $tag) { throw "Could not determine latest release tag." }
-  Write-Info "Latest release: v$tag"
+  $tag = $env:TXODDS_VERSION
+  if (-not $tag) {
+    $apiUrl = "https://api.github.com/repos/$Repo/releases/latest"
+    $release = Invoke-RestMethod -Uri $apiUrl
+    $tag = $release.tag_name -replace '^v',''
+  }
+  if (-not $tag) { throw "Could not determine version (and `$env:TXODDS_VERSION is not set)." }
+  Write-Info "Installing version: v$tag"
 
   $archiveName = "txodds-$Target.zip"
   $archiveUrl  = "https://github.com/$Repo/releases/download/v$tag/$archiveName"
